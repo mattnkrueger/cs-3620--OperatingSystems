@@ -1,0 +1,5 @@
+/bin/ls
+
+ls2_output
+-al
+0

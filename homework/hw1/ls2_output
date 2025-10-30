@@ -1,0 +1,14 @@
+total 68
+drwxr-xr-x 13 root root   416 Sep 30 03:36 .
+drwxr-xr-x  1 root root  4096 Sep 30 03:36 ..
+drwxr-xr-x  3 root root    96 Sep 30 01:30 .vscode
+-rw-r--r--  1 root root   140 Sep 30 02:47 Dockerfile
+-rwxr-xr-x  1 root root   298 Sep 30 02:41 compile.sh
+-rw-r--r--  1 root root    16 Sep 30 02:35 ls.txt
+-rw-r--r--  1 root root    26 Sep 30 02:36 ls2.txt
+-rw-r--r--  1 root root   695 Sep 30 03:02 ls2_output
+-rw-r--r--  1 root root    35 Sep 30 02:36 pringtargsenv.txt
+-rwxr-xr-x  1 root root  9224 Sep 30 03:36 print_args_envs
+-rw-r--r--  1 root root   862 Sep 30 02:40 print_args_envs.c
+-rwxr-xr-x  1 root root 14320 Sep 30 03:36 shell
+-rw-r--r--  1 root root  6549 Sep 30 03:36 shell.c
