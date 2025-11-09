@@ -15,8 +15,16 @@ tinput_t;
 
 unsigned int NSOLUTIONS = 8;
 
+// ============================ //
+//    GLOBAL SOLUTIONS FOUND    //
+// ============================ //
+// these are accessed by worker threads 
 unsigned short found_solutions = 0;
 unsigned long* solutions;
+
+// MUTEX
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+usigned
 
 /**
  * @brief return 0 if number is divisible by [1000000..1500000] otherwise 1
@@ -74,27 +82,41 @@ void* worker_thread_function(void *tinput_void)
 
   unsigned long start = 0;
   unsigned long end = start + 1000000000l;
-
   unsigned long attempted_solution; 
+
   for (attempted_solution=start; attempted_solution<end; attempted_solution++)
   {
+
+    pthread_mutex_lock(&lock);
+    if (found_solutions >= NSOLUTIONS)
+    {
+      pthread_mutex_unlock(&lock);
+      return NULL;
+    }
+    
     if (try_solution(tinput->challenge, attempted_solution))
     {
       short bad_solution = 0;
 
       for (int i=0; i<found_solutions; i++)
       {
-        bad_solution = 1;
+        if (attempted_solution%10 == solutions[i]%10)
+        {
+          bad_solution = 1;
+        }
       }
 
       if (bad_solution) continue;
 
+
       if (!divisibility_check(attempted_solution)) continue;
 
-      solutions[found_solutions] = attempted_solution;
-      found_solutions++;
-
-      if (found_solutions == NSOLUTIONS) return NULL;
+      if (found_solutions < NSOLUTIONS)
+      {
+        solutions[found_solutions] = attempted_solution;
+        found_solutions++;
+      }
+      pthread_mutex_unlock(&lock);
     }
   }
 }
