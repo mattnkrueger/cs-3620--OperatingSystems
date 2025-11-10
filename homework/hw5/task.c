@@ -161,10 +161,10 @@ void solve_one_challenge(unsigned short challenge, unsigned short nthread)
     pthread_join(threads[i], NULL);
   }
 
-  printf("%d", challenge);
+  printf("%hu", challenge);
   for (int i=0; i<NSOLUTIONS; i++)
   {
-    printf("%ld", solutions[i]);
+    printf("%lu", solutions[i]);
   }
 
   printf("\n");
