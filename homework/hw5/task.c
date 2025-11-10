@@ -10,21 +10,22 @@ typedef struct
 {
   unsigned short tid;
   unsigned short challenge;
+  unsigned int nthread;
 } 
 tinput_t;
 
-unsigned int NSOLUTIONS = 8;
+const unsigned int NSOLUTIONS = 8;
 
-// ============================ //
-//    GLOBAL SOLUTIONS FOUND    //
-// ============================ //
-// these are accessed by worker threads 
+// ================== //
+//  GLOBAL SOLUTIONS  //
+// ================== //
 unsigned short found_solutions = 0;
 unsigned long* solutions;
 
-// MUTEX
+// ======= //
+//  MUTEX  //
+// ======= //
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-usigned
 
 /**
  * @brief return 0 if number is divisible by [1000000..1500000] otherwise 1
@@ -80,44 +81,45 @@ void* worker_thread_function(void *tinput_void)
 {
   tinput_t* tinput = (tinput_t*) tinput_void;
 
-  unsigned long start = 0;
-  unsigned long end = start + 1000000000l;
-  unsigned long attempted_solution; 
+  // partition the range of values for each thread
+  const unsigned long RANGE = 1000000000L;
+  unsigned long chunk_size = RANGE / tinput->nthread;
+  unsigned long start = tinput->tid * chunk_size;
+  unsigned long end = (tinput->tid == tinput->nthread - 1) ? RANGE : start + chunk_size;
 
   for (attempted_solution=start; attempted_solution<end; attempted_solution++)
   {
+    if (!divisibility_check(attempted_solution)) continue;
+    if (!try_solution(tinput->challenge, attempted_solution)) continue;
 
+    // LOCK
     pthread_mutex_lock(&lock);
+
     if (found_solutions >= NSOLUTIONS)
     {
       pthread_mutex_unlock(&lock);
       return NULL;
     }
     
-    if (try_solution(tinput->challenge, attempted_solution))
+    short bad_solution = 0;
+
+    for (int i=0; i<found_solutions; i++)
     {
-      short bad_solution = 0;
-
-      for (int i=0; i<found_solutions; i++)
+      if (attempted_solution%10 == solutions[i]%10)
       {
-        if (attempted_solution%10 == solutions[i]%10)
-        {
-          bad_solution = 1;
-        }
+        bad_solution = 1;
+        break;
       }
-
-      if (bad_solution) continue;
-
-
-      if (!divisibility_check(attempted_solution)) continue;
-
-      if (found_solutions < NSOLUTIONS)
-      {
-        solutions[found_solutions] = attempted_solution;
-        found_solutions++;
-      }
-      pthread_mutex_unlock(&lock);
     }
+
+    if (!bad_solution && found_solutions < NSOLUTIONS)
+    {
+      solutions[found_solutions] = attempted_solution;
+      found_solutions++;
+    }
+
+    // UNLOCK
+    pthread_mutex_unlock(&lock);
   }
 }
 
@@ -144,6 +146,7 @@ void solve_one_challenge(unsigned short challenge, unsigned short nthread)
   {
     inputs[i].tid = i;
     inputs[i].challenge = challenge;
+    inputs[i].nthread = nthread;
 
     pthread_create(                           // CREATE A NEW THREAD
       &(threads[i]),                          // output thread id
