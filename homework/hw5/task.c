@@ -87,7 +87,7 @@ void* worker_thread_function(void *tinput_void)
   unsigned long start = tinput->tid * chunk_size;
   unsigned long end = (tinput->tid == tinput->nthread - 1) ? RANGE : start + chunk_size;
 
-  for (attempted_solution=start; attempted_solution<end; attempted_solution++)
+  for (unsigned long attempted_solution=start; attempted_solution<end; attempted_solution++)
   {
     if (!divisibility_check(attempted_solution)) continue;
     if (!try_solution(tinput->challenge, attempted_solution)) continue;
