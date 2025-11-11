@@ -191,7 +191,7 @@ int main(int argc, char* argv[]) {
   bool valid = (nthread > 0 && nthread <= 100) ? true : false;
   if (!valid) 
   {
-    fprintf(stderr, "Number of threads (%hu) must be between [1-100]", nthread);
+    fprintf(stderr, "Number of threads (%hu) must be between [1-100]\n", nthread);
     return 1;
   }
   
