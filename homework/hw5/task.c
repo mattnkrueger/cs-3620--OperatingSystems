@@ -80,8 +80,6 @@ void* worker_thread_function(void *tinput_void)
 {
   tinput_t* tinput = (tinput_t*) tinput_void;
 
-  printf("STARTING WORKER THREAD: %d", tinput->tid);
-
   // partition the range of values for each thread
   const unsigned long RANGE = 1000000000L;
   unsigned long chunk_size = RANGE / tinput->nthread;
@@ -159,10 +157,14 @@ void solve_one_challenge(unsigned short challenge, unsigned short nthread)
     );
   }
 
+  printf("THREADS CREATED!!\n");
+
   for (int i=0; i<nthread; i++) 
   {
     pthread_join(threads[i], NULL);
   }
+
+  printf("THREADS COMPLTETED!!\n");
 
   printf("%hu", challenge);
   for (int i=0; i<NSOLUTIONS; i++)
@@ -180,22 +182,26 @@ void solve_one_challenge(unsigned short challenge, unsigned short nthread)
  * @param argc - count of arguments
  * @param argv - contains the number of worker threads (argv[1]) and challenges to solve
  * @return int 
- */
+j */
 int main(int argc, char* argv[]) 
 {
-  printf("Starting Program\n");  
-  printf("ARGC: %d\n", argc);
-  printf("ARGV:\n")
-  for (int i = 0; i < argc; i++)
+  unsigned short nthread = strtol(argv[1], NULL, 10);   
+
+  bool valid = (nthread <= 100 && nthread > 0) ? true : false; 
+  if (!valid) 
   {
-    printf("  argv[%d]: %s\n", i, argv[i]);
+    printf("Invalid amount of threads [%hu]; Number of threads must be between 1 and 100", nthread)
+    return 0;
   }
 
-  unsigned short nthread = strtol(argv[1], NULL, 10);   
+  printf("Starting Program\n");  
+  printf("NUMBER OF THREADS: %hu\n", nthread);
 
   for (int i=2; i<argc; i++)
   {
     unsigned short challenge = strtol(argv[i], NULL, 10);
+
+    printf("\n NEW CHALLENGE: %hu\n", challenge);
     solve_one_challenge(challenge, nthread);
   }
 
