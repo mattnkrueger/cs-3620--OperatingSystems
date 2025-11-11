@@ -80,6 +80,8 @@ void* worker_thread_function(void *tinput_void)
 {
   tinput_t* tinput = (tinput_t*) tinput_void;
 
+  printf("STARTING WORKER THREAD: %d", tinput->tid);
+
   // partition the range of values for each thread
   const unsigned long RANGE = 1000000000L;
   unsigned long chunk_size = RANGE / tinput->nthread;
@@ -181,6 +183,14 @@ void solve_one_challenge(unsigned short challenge, unsigned short nthread)
  */
 int main(int argc, char* argv[]) 
 {
+  printf("Starting Program\n");  
+  printf("ARGC: %d\n", argc);
+  printf("ARGV:\n")
+  for (int i = 0; i < argc; i++)
+  {
+    printf("  argv[%d]: %s\n", i, argv[i]);
+  }
+
   unsigned short nthread = strtol(argv[1], NULL, 10);   
 
   for (int i=2; i<argc; i++)
