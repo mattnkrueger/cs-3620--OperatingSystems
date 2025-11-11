@@ -5,12 +5,12 @@ TARGET = task
 SRC = task.c
 
 $(TARGET): $(SRC)
-        $(CC) $(CFLAGS) -o $(TARGET) $(SRC) $(LDFLAGS)
+    $(CC) $(CFLAGS) -o $(TARGET) $(SRC) $(LDFLAGS)
 
 .PHONY: clean run
 
 run: $(TARGET)
-        ./$(TARGET) 3 12 1000 123
+    ./$(TARGET) 3 12 1000 123
 
 clean:
-        rm -f $(TARGET)
+	rm -f $(TARGET)
