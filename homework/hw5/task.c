@@ -35,7 +35,13 @@ pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
  */
 unsigned short divisibility_check(unsigned long n)
 {
-  for (unsigned long i=1000000; i<=1500000; i++)
+  const unsigned long START = 1000000;
+  const unsigned long END = 1500000;
+
+  if (n == 0) return 0;
+  if (n < START) return 1;
+
+  for (unsigned long i=START; i<=END; i++)
   {
     if (n%i == 0)
     {
@@ -61,14 +67,7 @@ short try_solution(unsigned short challenge, unsigned long attempted_solution)
   SHA256_Update(&ctx, &attempted_solution, 8);
   SHA256_Final(digest, &ctx);
 
-  if ((*(unsigned short*)digest) == challenge)
-  {
-    return 1;
-  } 
-  else 
-  {
-    return 0;
-  }
+  return (*(unsigned short*)digest == challenge) ? 1 : 0;
 }
 
 /**
@@ -112,7 +111,7 @@ void* worker_thread_function(void *tinput_void)
       }
     }
 
-    if (!bad_solution && found_solutions < NSOLUTIONS)
+    if (!bad_solution)
     {
       solutions[found_solutions] = attempted_solution;
       found_solutions++;
@@ -121,6 +120,8 @@ void* worker_thread_function(void *tinput_void)
     // UNLOCK
     pthread_mutex_unlock(&lock);
   }
+
+  return NULL;
 }
 
 /**
@@ -137,7 +138,7 @@ void solve_one_challenge(unsigned short challenge, unsigned short nthread)
   found_solutions = 0;
   solutions = (unsigned long*) malloc(NSOLUTIONS * (sizeof(unsigned long)));
 
-  for (int i=0; i<nthread; i++)
+  for (int i=0; i<NSOLUTIONS; i++)
   {
     solutions[i] = 0;
   }
@@ -164,7 +165,7 @@ void solve_one_challenge(unsigned short challenge, unsigned short nthread)
   printf("%hu", challenge);
   for (int i=0; i<NSOLUTIONS; i++)
   {
-    printf("%lu", solutions[i]);
+    printf(" %lu", solutions[i]);
   }
 
   printf("\n");
